@@ -3,25 +3,29 @@
 # Install
 
 ```
-$ go get -u github.com/bluele/cs/cmd/cs
+$ go get -u github.com/bluele/stream/cmd/stream
 ```
 
 # How to use
 
-```
-$ cs
-/ ls
-/  cd s3
-/s3  ls
-bucket1 bucket2
-/s3  cd bucket1
-/s3/bucket1  ls
-/s3/bucket1  mv file.txt /slack/junkimura/
+## `cat` command
+
+```sh
+$ echo "ok" | stream cat s3://mybucket/sample.txt
+
+$ stream cat s3://mybucket/sample.txt
+ok
 ```
 
+## `ls` command
 
-$ cst cp s3://dev-kimura/test slack://jun.kimura/F0E6YCPMY/
+```sh
+$ stream ls s3://mybucket/
+sample.txt
+```
 
-$ cst ls s3://dev-kimura/
+## `cp` command
 
-$ cst 
+```sh
+$ stream cp ./text.txt s3://mybucket/
+```

@@ -2,6 +2,7 @@ package stream
 
 import (
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 )
@@ -68,14 +69,51 @@ func (cm *CopyCommand) Synopsis() string {
 	return "Print \"Copy!\""
 }
 
-func getPlugin(name string) (Plugin, string, bool) {
-	scheme, path, err := parseProtocol(name)
-	if err != nil {
-		return nil, "", false
+type CatCommand struct{}
+
+func (cm *CatCommand) Help() string {
+	return "cat command"
+}
+
+func (cm *CatCommand) Run(args []string) int {
+	if len(args) < 1 {
+		return 1
 	}
-	pg, ok := plugins[scheme]
+
+	if hasStdin() {
+		return cm.writeStream(args[0])
+	} else {
+		return cm.readStream(args[0])
+	}
+}
+
+func (cm *CatCommand) writeStream(path string) int {
+	dst, dstPath, ok := getPlugin(path)
 	if !ok {
-		return nil, "", false
+		return 1
 	}
-	return pg, path, true
+	if err := dst.WriteFile(NewFile("", os.Stdin), dstPath); err != nil {
+		fmt.Println(err)
+	}
+	return 0
+}
+
+func (cm *CatCommand) readStream(path string) int {
+	src, srcPath, ok := getPlugin(path)
+	if !ok {
+		return 1
+	}
+	reader, err := src.FileReader(srcPath)
+	if err != nil {
+		fmt.Println(err)
+		return 1
+	}
+	if _, err := io.Copy(os.Stdout, reader); err != nil {
+		fmt.Println(err)
+	}
+	return 0
+}
+
+func (cm *CatCommand) Synopsis() string {
+	return "Print \"Cat!\""
 }

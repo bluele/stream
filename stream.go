@@ -33,6 +33,18 @@ func InitPlugins(pgs []Plugin) {
 	}
 }
 
+func getPlugin(name string) (Plugin, string, bool) {
+	scheme, path, err := parseProtocol(name)
+	if err != nil {
+		return nil, "", false
+	}
+	pg, ok := plugins[scheme]
+	if !ok {
+		return nil, "", false
+	}
+	return pg, path, true
+}
+
 func parseProtocol(path string) (string, string, error) {
 	u, err := url.Parse(path)
 	if err != nil {

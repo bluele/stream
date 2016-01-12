@@ -32,6 +32,9 @@ func main() {
 		"cp": func() (cli.Command, error) {
 			return &stream.CopyCommand{}, nil
 		},
+		"cat": func() (cli.Command, error) {
+			return &stream.CatCommand{}, nil
+		},
 	}
 
 	status, err := c.Run()
