@@ -83,8 +83,13 @@ func (cm *CatCommand) Run(args []string) int {
 	if hasStdin() {
 		return cm.writeStream(args[0])
 	} else {
-		return cm.readStream(args[0])
+		for _, arg := range args {
+			if ret := cm.readStream(arg); ret != 0 {
+				return ret
+			}
+		}
 	}
+	return 0
 }
 
 func (cm *CatCommand) writeStream(path string) int {
